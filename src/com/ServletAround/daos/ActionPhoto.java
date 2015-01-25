@@ -1,6 +1,7 @@
 package com.ServletAround.daos;
 import com.ServletAround.income.JSONFile;
 import com.ServletAround.main.ServletTest;
+import com.ServletAround.utils.BCrypt;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ public class ActionPhoto {
 			            
 			            iff.next();
 			            
-			            	if(iff.getString(4).equals(password)){
+			            	if(BCrypt.checkpw(password, iff.getString(4))){
 			            		int id = iff.getInt(1);
 			            		st.executeUpdate("UPDATE users SET photo='" + photo + "' WHERE login LIKE '" + login + "'");
 			            		ResultSet prob = st.executeQuery("SELECT * FROM friends WHERE friends_id='" + id + "'");
@@ -45,21 +46,25 @@ public class ActionPhoto {
 	            	            	 ResultSet okurde = st.executeQuery("SELECT friend_" + i + " FROM friends WHERE friends_id='" + id + "'");
 	            	            	 okurde.next();
 	            	            	 String ups = okurde.getString(1);
+	            	            	 okurde.close();
 	            	            	 ResultSet okurczaki = st.executeQuery("SELECT users_id FROM users WHERE login LIKE '" + ups + "'");
 	            	            	 okurczaki.next();
 	            	            	 int jprdl = okurczaki.getInt(1);
-	            	            	 ResultSet ileichjeszcze = st.executeQuery("SELECT * FROM photos WHERE photos_id='" + jprdl +"'");
+	            	            	 okurczaki.close();
+	            	            	 ResultSet ileichjeszcze = st.executeQuery("SELECT * FROM photos WHERE photo_id='" + jprdl +"'");
 	            	            	 ileichjeszcze.next();
 	            	            	 int number2 = 0;
+	            	            
 	 								for(int f = 2; f <= 41; f++){
 
-	 	            	                 if(prob.getString(f) == null){
+	 	            	                 if(ileichjeszcze.getString(f) == null){
 	 	            	                     number2 = f;
 	 	            	                     f = 41;
 	 	            	                 }
 	 	            	             }
-	 	            	             number2 -= 2;
-	 	            	             st.executeUpdate("UPDATE photos SET photo" + number2 + "='" + login + "' WHERE photos_id='" + jprdl+"'");
+	 	            	             number2 -= 1;
+	 	            	             ileichjeszcze.close();
+	 	            	             st.executeUpdate("UPDATE photos SET photo" + number2 + "='" + login + "' WHERE photo_id='" + jprdl+"'");
 	            	             }
 				        
 				        

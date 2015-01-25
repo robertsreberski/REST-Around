@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import com.ServletAround.income.JSONFile;
 import com.ServletAround.main.ServletTest;
+import com.ServletAround.utils.BCrypt;
 public class ActionDelete {
 	private static final Logger logger = Logger.getLogger(ServletTest.class.getName());
 	public static Map<String, Object> Delete(JSONFile jsonFile){
@@ -33,7 +34,7 @@ public class ActionDelete {
 			            
 			            iff.next();
 			            
-			            	if(iff.getString(1).equals(password)){
+			            	if(BCrypt.checkpw(password, iff.getString(1))){
 				        ResultSet user = st.executeQuery("SELECT users_id FROM users WHERE login LIKE '" + login + "'");
 
 				        user.next();
@@ -74,7 +75,7 @@ public class ActionDelete {
 				            String friend1 = next.getString(1);
 
 				            if(friend1 == null){
-				                st.executeUpdate(forEachQuery_2 + Integer.toString(i) + "= NULL WHERE friends_id='" + ids + "'");
+				                st.executeUpdate(forEachQuery_2 + Integer.toString(i) + "=NULL WHERE friends_id='" + ids + "'");
 				            }
 				            else {
 				                st.executeUpdate(forEachQuery_2 + Integer.toString(i) + "='" + friend1 + "' WHERE friends_id='" + ids + "'");
@@ -142,7 +143,7 @@ public class ActionDelete {
 				                String friend1 = next.getString(1);
 
 				                if(friend1 == null){
-				                    st.executeUpdate(forEachQuery_2 + Integer.toString(i) + "= NULL WHERE friends_id='" + ids2 + "'");
+				                    st.executeUpdate(forEachQuery_2 + Integer.toString(i) + "=NULL WHERE friends_id='" + ids2 + "'");
 				                }
 				                else {
 				                    st.executeUpdate(forEachQuery_2 + Integer.toString(i) + "='" + friend1 + "' WHERE friends_id='" + ids2 + "'");

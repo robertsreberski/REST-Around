@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,10 +20,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ServletAround.daos.ActionAdd;
 import com.ServletAround.daos.ActionDelete;
+import com.ServletAround.daos.ActionDownload;
 import com.ServletAround.daos.ActionLogin;
 import com.ServletAround.daos.ActionPhoto;
+import com.ServletAround.daos.ActionPoke;
 import com.ServletAround.daos.ActionRegister;
 import com.ServletAround.daos.ActionRequested;
+import com.ServletAround.daos.ActionUpdate;
 import com.ServletAround.income.JSONFile;
 import com.ServletAround.utils.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,26 +64,45 @@ public class ServletTest extends HttpServlet implements Constants{
     	ObjectMapper mapper = new ObjectMapper();
     	@SuppressWarnings("unchecked")
 		Map<String, Object> jsonMap =  mapper.readValue(requestBodyInput, Map.class);
+    	System.out.println(jsonMap);
     	JSONFile jsonFile = new JSONFile((String)jsonMap.get("login"), (String)jsonMap.get("password") );
     	String action = (String) jsonMap.get("action");
     	switch(action){
     	case UPDATE_SERVER_ACTION:{
     		
     		// adding some specific variables 
-    		jsonFile.setX(Double.parseDouble(jsonMap.get("x").toString()));
-    		jsonFile.setY(Double.parseDouble(jsonMap.get("y").toString()));
+    		jsonFile.setX(jsonMap.get("x").toString());
+    		jsonFile.setY(jsonMap.get("y").toString());
     		jsonFile.setStatus((String)jsonMap.get("status"));
     		jsonFile.setActivity((int)jsonMap.get("activity"));
     		requestBodyInput.close();
-    		
+    		PrintWriter out = response.getWriter();
+    		// Assuming your json object is **jsonObject**, perform the following, it will return your json object  
+    		out.print(ActionUpdate.Update(jsonFile));
+    		out.flush();
     		
     		break;
     	}
     	case DOWNLOAD_PHOTO_ACTION:{
     		
     		requestBodyInput.close();
+    		PrintWriter out = response.getWriter();
+    		// Assuming your json object is **jsonObject**, perform the following, it will return your json object  
+    		out.print(ActionDownload.Download(jsonFile));
+    		out.flush();
     		
     		
+    		
+    		break;
+    	}
+    	
+    	case RESPONSE_REQUEST_SERVER_ACTION:{
+    		jsonFile.setValid((boolean)jsonMap.get("valid"));
+    		jsonFile.setFriend((String)jsonMap.get("friend"));
+    		requestBodyInput.close();
+    		OutputStream out = response.getOutputStream();
+    		mapper.writeValue(out, ActionRequested.Requested(jsonFile));
+    		out.close();
     		
     		
     		break;
@@ -87,11 +110,12 @@ public class ServletTest extends HttpServlet implements Constants{
     	
     	case REGISTER_SERVER_ACTION:{
     		
-    		jsonFile.setX(Double.parseDouble(jsonMap.get("x").toString()));
-    		jsonFile.setY(Double.parseDouble(jsonMap.get("y").toString()));
+    		jsonFile.setX(jsonMap.get("x").toString());
+    		jsonFile.setY(jsonMap.get("y").toString());
     		jsonFile.setStatus((String)jsonMap.get("status"));
     		jsonFile.setActivity((int)jsonMap.get("activity"));
     		jsonFile.setPhoto((String)jsonMap.get("photo"));
+    		jsonFile.setEmail((String)jsonMap.get("email"));
     		requestBodyInput.close();
     		//starting output stream
     		OutputStream out = response.getOutputStream();
@@ -99,28 +123,20 @@ public class ServletTest extends HttpServlet implements Constants{
     		out.close();
     		break;
     	}
-    	case RESPONSE_REQUEST_SERVER_ACTION:{
-    		jsonFile.setFriend((String)jsonMap.get("friend"));
-    		jsonFile.setValid((boolean)jsonMap.get("valid"));
-    		requestBodyInput.close();
-    		//starting output stream
-    		OutputStream out = response.getOutputStream();
-    		mapper.writeValue(out, ActionRequested.Requested(jsonFile));
-    		out.close();
-    		break;
-    	}
+    
     	case LOGIN_SERVER_ACTION:{
     		System.out.println(jsonMap);
-    		jsonFile.setX(Double.parseDouble(jsonMap.get("x").toString()));
-    		jsonFile.setY(Double.parseDouble(jsonMap.get("y").toString()));
+    		jsonFile.setX(jsonMap.get("x").toString());
+    		jsonFile.setY(jsonMap.get("y").toString());
     		jsonFile.setStatus((String)jsonMap.get("status"));
     		jsonFile.setActivity((int)jsonMap.get("activity"));
+    		jsonFile.setEmail((String)jsonMap.get("email"));
     		requestBodyInput.close();
     		//starting output stream
-    		OutputStream out = response.getOutputStream();
-    		mapper.writeValue(out, ActionLogin.Login(jsonFile));
-    		
-    		out.close();
+    		PrintWriter out = response.getWriter();
+    		// Assuming your json object is **jsonObject**, perform the following, it will return your json object  
+    		out.print(ActionLogin.Login(jsonFile));
+    		out.flush();
     		
     		
     		break;
@@ -156,6 +172,26 @@ public class ServletTest extends HttpServlet implements Constants{
     		
     		break;
     	}
+    	
+    	case POKE_SERVER_ACTION:{
+    		jsonFile.setFriend((String)jsonMap.get("friend"));
+    		requestBodyInput.close();
+    		//starting output stream
+    		OutputStream out = response.getOutputStream();
+    		mapper.writeValue(out, ActionPoke.Poke(jsonFile));
+    		
+    		out.close();
+    		
+    		
+    		
+    		
+    		
+    		break;
+    	}
+    	
+    	
+    	
+    	
     	}
     	
     	
@@ -174,14 +210,7 @@ public class ServletTest extends HttpServlet implements Constants{
     	
     	
     	
-       /* BufferedReader streamReader = new BufferedReader(new InputStreamReader(requestBodyInput, "UTF-8"));
-        StringBuilder responseStrBuilder = new StringBuilder();
-
-        String inputStr;
-        while ((inputStr = streamReader.readLine()) != null)
-            responseStrBuilder.append(inputStr);
-
-        JSONObject jsonObject = new JSONObject(responseStrBuilder.toString());*/
+       
     }
  
 

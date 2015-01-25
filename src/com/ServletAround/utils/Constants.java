@@ -9,4 +9,5 @@ public interface Constants {
     static final String RESPONSE_REQUEST_SERVER_ACTION = "com.StrapleGroup.RESPONSE";
     static final String DELETE_SERVER_ACTION = "com.StrapleGroup.DELETE";
     static final String DOWNLOAD_PHOTO_ACTION = "com.StrapleGroup.DOWNLOAD";
+    static final String POKE_SERVER_ACTION = "com.StrapleGroup.POKE";
 }

@@ -13,11 +13,5 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="D:/JAVA_DEVELOPEMENT/Apache Software/apache-tomcat-7.0.57/lib/jackson-annotations-2.4.4.jar"/>
-	<classpathentry kind="lib" path="D:/JAVA_DEVELOPEMENT/Apache Software/apache-tomcat-7.0.57/lib/jackson-core-2.4.4.jar"/>
-	<classpathentry kind="lib" path="D:/JAVA_DEVELOPEMENT/Apache Software/apache-tomcat-7.0.57/lib/jackson-databind-2.4.4.jar"/>
-	<classpathentry kind="lib" path="D:/JAVA_DEVELOPEMENT/Apache Software/apache-tomcat-7.0.57/lib/mysql-connector-java-5.1.34-bin.jar"/>
-	<classpathentry kind="lib" path="D:/JAVA_DEVELOPEMENT/Apache Software/apache-tomcat-7.0.57/lib/javax.json-api-1.0.jar"/>
-	<classpathentry kind="lib" path="D:/JAVA_DEVELOPEMENT/Apache Software/apache-tomcat-7.0.57/lib/java-json.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

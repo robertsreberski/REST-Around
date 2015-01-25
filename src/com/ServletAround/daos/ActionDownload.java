@@ -1,6 +1,7 @@
 package com.ServletAround.daos;
 import com.ServletAround.income.JSONFile;
 import com.ServletAround.main.ServletTest;
+import com.ServletAround.utils.BCrypt;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -8,20 +9,21 @@ import java.util.Map;
 import java.util.logging.*;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 public class ActionDownload {
 	private static final Logger logger = Logger.getLogger(ServletTest.class.getName());
-	public static Map<String, Object> Download(JSONFile jsonFile){
+	public static JSONObject Download(JSONFile jsonFile){
 		String login = jsonFile.getLogin();
 		String password = jsonFile.getPass();
 		
 	
-		Map<String, Object> map = new HashMap<String, Object>();
+		JSONObject map = new JSONObject();
 	
 		try{
 		 Class.forName("com.mysql.jdbc.Driver");
 
-	        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/arounddb", "root", "KF=WQqTbV%6m");
+		 Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/arounddb", "dataDisposal", "hwVvfcYCJMMHH4yp");
 
 	        Statement st = con.createStatement();
 	
@@ -29,9 +31,9 @@ public class ActionDownload {
             
             iff.next();
             
-            	if(iff.getString(4).equals(password)){
+            	if(BCrypt.checkpw(password, iff.getString(4))){
             		int user_id = iff.getInt(1);
-            		ResultSet logins = st.executeQuery("SELECT * FROM photos WHERE photos_id='" + user_id + "'");
+            		ResultSet logins = st.executeQuery("SELECT * FROM photos WHERE photo_id='" + user_id + "'");
             		logins.next();
             		int number = 0;
 					for(int i = 2; i <= 41; i++){
@@ -52,22 +54,31 @@ public class ActionDownload {
             			jo.put("login", first);
             			jo.put("photo", photography);
             			ja.put(jo);
-            			st.executeUpdate("UPDATE photos SET photo"+ (e-1) + "=NULL WHERE photos_id='" + user_id+"'");
+            			System.out.println("UPDATE photos SET photo"+ (e-1) + "=NULL WHERE photo_id='" + user_id+"'");
+            			st.executeUpdate("UPDATE photos SET photo"+ (e-1) + "=NULL WHERE photo_id='" + user_id+"'");
             		}
             		map.put("valid", true);
             		map.put("photo_list", ja);
             		con.close();
-            		
+            		System.out.println(map);
             	
             	
             	}else{
             	map.put("valid", false);
             	con.close();
+            	System.out.println(map);
             	}
             	return map;
 }catch(Exception e){
     logger.log(Level.WARNING, "An exception appeared while downloading a photo", e);
-    map.put("valid", "false");
+    
+		try {
+			map.put("valid", false);
+		} catch (JSONException e1) {
+			
+		}
+	
+	
     
     return map;
 }

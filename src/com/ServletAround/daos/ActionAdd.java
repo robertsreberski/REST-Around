@@ -1,6 +1,7 @@
 package com.ServletAround.daos;
 import com.ServletAround.income.JSONFile;
 import com.ServletAround.main.ServletTest;
+import com.ServletAround.utils.BCrypt;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -20,7 +21,7 @@ public class ActionAdd {
 		try{
 		 Class.forName("com.mysql.jdbc.Driver");
 
-	        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/arounddb", "root", "KF=WQqTbV%6m");
+		 Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/arounddb", "dataDisposal", "hwVvfcYCJMMHH4yp");
 
 	        Statement st = con.createStatement();
 	
@@ -28,15 +29,40 @@ public class ActionAdd {
             
             iff.next();
             
-            	if(iff.getString(1).equals(password)){
+            	if(BCrypt.checkpw(password, iff.getString(1)) && login.equals(friend) == false){
+            		
+            	
+
+            		   
             	//checking if this friend exists
             		ResultSet res = st.executeQuery("SELECT * FROM users WHERE login LIKE '"+ friend + "'");
             		
             	   
-            	        if(res.isBeforeFirst()){
-            	        	int req_id = res.getInt(1);
-            	        	 ResultSet req = st.executeQuery("SELECT * FROM requests WHERE request_id='" + req_id + "'");
+            	        if(!res.isBeforeFirst()){map.put("valid", "false");
+                    	con.close();
+                    	return map;
+            	        }else{
+            	        	ResultSet res2 = st.executeQuery("SELECT * FROM users WHERE login LIKE '"+ friend + "'");
+            	        	res2.next();
+            	        	int req_id = res2.getInt(1);
+            	        	 ResultSet req = st.executeQuery("SELECT * FROM requests WHERE requests_id='" + req_id + "'");
             	             req.next();
+            	             int tester = 0;
+            	             for(int h = 2; h <= 41; h++){
+            	            	 String comparer = req.getString(h);
+            	            	 if (comparer != null){
+            	                 if(comparer.equals(friend)){
+            	                     h = 41;
+            	                     tester = 1;
+            	                 }}
+            	             }
+            	             
+            	             if(tester == 1){
+            	            	 map.put("valid", false);
+            	            	 con.close();
+            	            	 return map;
+            	             }else{
+            	             
             	             int number = 0;
 							for(int e = 2; e <= 41; e++){
 
@@ -46,7 +72,7 @@ public class ActionAdd {
             	                 }
             	             }
             	             number -= 1;
-            	        	st.executeUpdate("UDPATE requests SET request" + number + "='" + login + "' WHERE requests_id='"+req_id+"'");
+            	        	st.executeUpdate("UPDATE requests SET request" + number + "='" + login + "' WHERE requests_id='"+req_id+"'");
             	        	
 //            	        	res.next();
 //            	        	int requested_id = res.getInt(1);
@@ -63,21 +89,17 @@ public class ActionAdd {
 //           	             number2 -= 1;
 //           	             st.executeUpdate("UPDATE requested SET requested"+ number2 + "='"+ friend +"' WHERE requested_id='" + requested_id +"'");
 //		
-		
-		
+            	             }
+            	        }
             	        }
             	        
             	map.put("valid", true);
             	con.close();
             	return map;
-            	}else{
-            	map.put("valid", "false");
-            	con.close();
-            	return map;
             	}
-			}catch(Exception e){
+			catch(Exception e){
 	            logger.log(Level.WARNING, "An exception appeared while adding a friend", e);
-	            map.put("valid", "false");
+	            map.put("valid", false);
 	            
 	            return map;
 		}

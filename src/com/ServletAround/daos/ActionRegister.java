@@ -3,6 +3,7 @@ package com.ServletAround.daos;
 
 import com.ServletAround.income.JSONFile;
 import com.ServletAround.main.ServletTest;
+import com.ServletAround.utils.BCrypt;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -18,12 +19,14 @@ private static final Logger logger = Logger.getLogger(ServletTest.class.getName(
 
 			String login = jsonFile.getLogin();
 			String password = jsonFile.getPass();
-			Double x = jsonFile.getX();
-			Double y = jsonFile.getY();
+			String hashed_password = BCrypt.hashpw(password, BCrypt.gensalt());
+			String x = jsonFile.getX();
+			String y = jsonFile.getY();
+			String email = jsonFile.getEmail();
 			String status = jsonFile.getStatus();
 			int activity = jsonFile.getActivity();
 			String photo = jsonFile.getPhoto();
-			String query = "INSERT INTO users (friends_id, login, password, x, y, status, activity, photo) VALUES (";
+			String query = "INSERT INTO users (friends_id, login, password, x, y, status, activity, photo, email) VALUES (";
 			Map<String, Object> map = new HashMap<String, Object>();
 
 
@@ -39,8 +42,18 @@ private static final Logger logger = Logger.getLogger(ServletTest.class.getName(
 
 	    //  Checking if the login is occupied
 	        if(!res.isBeforeFirst()){
+	        	ResultSet res2 = st.executeQuery("SELECT * FROM users WHERE email LIKE '"+ email + "'");
+
+	    	    //  Checking if the login is occupied
+	    	        if(!res2.isBeforeFirst()){
 
 	            st.executeUpdate("INSERT INTO friends (friend_1) VALUES (NULL)");
+	            
+	            st.executeUpdate("INSERT INTO photos (photo1) VALUES (NULL)");
+	            
+	            st.executeUpdate("INSERT INTO requests (request1) VALUES (NULL)");
+	            
+	            st.executeUpdate("INSERT INTO pokes (poke1) VALUES (NULL)");
 
 	            ResultSet resint = st.executeQuery("SELECT friends_id FROM friends ORDER BY friends_id DESC LIMIT 1");
 
@@ -59,7 +72,7 @@ private static final Logger logger = Logger.getLogger(ServletTest.class.getName(
 
 	                    + login + "', '"
 
-	                    + password + "', '"                    
+	                    + hashed_password + "', '"                    
 
 	                    + x + "', '"
 
@@ -69,17 +82,26 @@ private static final Logger logger = Logger.getLogger(ServletTest.class.getName(
 
 	                    + activity + "', '"
 	                    
-	                    + photo + "');");
+	                    + photo + "', '"
+	                    
+	                    + email + "');");
 
 		    con.close();
 //	      Returns true only if everything gone right
 		    map.put("valid", true);
 		    con.close();
+		    System.out.println(map);
 		    return map;
-
+	    	        }else {
+	    	        	map.put("valid", false);
+	    				System.out.println(map);
+	    				con.close();
+	    			    return map;
+	    	        }
 		} else {
 
 			map.put("valid", false);
+			System.out.println(map);
 			con.close();
 		    return map;
 
@@ -88,7 +110,7 @@ private static final Logger logger = Logger.getLogger(ServletTest.class.getName(
 		}catch(Exception e) {
 
 			logger.log(Level.WARNING, " An exception appeared, problem with connecting with database", e);
-
+			
 			map.put("valid", false);
 		    return map;
 

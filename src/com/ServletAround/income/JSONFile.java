@@ -1,15 +1,25 @@
 package com.ServletAround.income;
 
+import java.util.Set;
+
 public class JSONFile {
-private String login, pass, status, photo, friend;
+private String login, pass, email, status, photo, friend, x, y;
 private int activity;
-private Double x, y;
+
 private boolean valid;
 
 
 public JSONFile(String login, String pass){
 	this.login = login;
 	this.pass = pass;
+}
+
+public void setEmail(String email) {
+	this.email = email;
+}
+
+public String getEmail(){
+	return email;	
 }
 
 	public String getLogin(){
@@ -20,11 +30,11 @@ public String getPass(){
 		return pass;
 	}
 
-public Double getX(){
+public String getX(){
 	return x;
 }
 
-public Double getY(){
+public String getY(){
 	return y;
 }
 
@@ -55,11 +65,11 @@ public void setPass(String pass){
 	this.pass=pass;
 }
 
-public void setX(Double x){
+public void setX(String x){
 this.x=x;
 }
 
-public void setY(Double y){
+public void setY(String y){
 this.y=y;
 }
 
